@@ -55,6 +55,14 @@ const init = async () => {
         }
     });
 
+    server.route({
+        method: 'POST ',
+        path: '/addProduction',
+        handler: (request, h) => {
+            return 'ajouter aux production';
+        }
+    });
+
     await server.start();
     console.log('Server running on %s', server.info.uri);
 };
