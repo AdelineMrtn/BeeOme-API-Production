@@ -2,7 +2,9 @@
 
 const Hapi = require('@hapi/hapi');
 const datas = require('./production.json');
+const test = require('./testProduction.json');
 const moment = require('moment');
+var fs = require('fs');
 
 const init = async () => {
 
@@ -56,10 +58,16 @@ const init = async () => {
     });
 
     server.route({
-        method: 'POST ',
+        method: 'POST',
         path: '/addProduction',
         handler: (request, h) => {
-            return 'ajouter aux production';
+            const payload = request.payload
+            fs.readFile('production.json', function (err, data) {
+                var json = JSON.parse(data)
+                json.push(payload)
+                fs.writeFile("production.json", JSON.stringify(json), function(err) {})
+            })
+            return payload;
         }
     });
 
