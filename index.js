@@ -1,20 +1,57 @@
 'use strict';
 
 const Hapi = require('@hapi/hapi');
+const datas = require('./production.json');
+const moment = require('moment');
 
 const init = async () => {
 
     const server = Hapi.server({
-        port: 3000,
-        host: 'localhost'
+        port: 3004,
+        host: 'localhost',
+        routes: {
+            cors: {
+                origin:['*'],
+                headers: ["Accept", "Content-Type"],
+                additionalHeaders: ["X-Requested-With"]
+            }
+        }
     });
 
     server.route({
         method: 'GET',
-        path: '/',
+        path: '/status',
         handler: (request, h) => {
 
-            return 'La production d\'une rucheeeeeeeeeeee';
+            return 'API production: ok';
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/lastProduction',
+        handler: (request, h) => {
+            return datas[datas.length-1];
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/productionsByWeek',
+        handler: (request, h) => {
+            return datas.filter((el)=>{
+                return el.date > moment().startOf('week').add(1, 'day').format('YYYY-MM-DD HH:mm:ss') && el.date < moment().endOf('week').add(1, 'day').format('YYYY-MM-DD HH:mm:ss') 
+            });;
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/productionsByMonth',
+        handler: (request, h) => {
+            return datas.filter((el)=>{
+                return el.date > moment().startOf('month').format('YYYY-MM-DD HH:mm:ss') && el.date < moment().endOf('month').format('YYYY-MM-DD HH:mm:ss') 
+            });;
         }
     });
 
